@@ -1,82 +1,111 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, Button, TouchableOpacity , TextInput } from "react-native";
+import {
+  TextInput,
+  View,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  
+  
+} from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import CheckBox from '@react-native-community/checkbox';
+
 type TodoType = {
   id: number;
   name: string;
   isDone: boolean;
 };
-function index() {
-  const [todo, setTodos] = useState<TodoType[]>([
-    {
-      id: 1,
-      name: "created ui",
-      isDone: false,
-    },
-    {
-      id: 2,
-      name: "created ui",
-      isDone: false,
-    },
-    {
-      id: 3,
-      name: "created ui",
-      isDone: false,
-    },
-    {
-      id: 4,
-      name: "created ui",
-      isDone: false,
-    },
+const index = () => {
+  const [todo, setTodo] = useState<TodoType[]>([
+    { id: 1, name: "task 1", isDone: false },
+    { id: 2, name: "task 2", isDone: false },
+    { id: 3, name: "task 3", isDone: false },
+    { id: 4, name: "task 4", isDone: false },
+    { id: 5, name: "task 5", isDone: false },
+    { id: 6, name: "task 6", isDone: false },
+    { id: 7, name: "task 7", isDone: false },
   ]);
 
-  const [Text , setText] = useState<string>()
+  const [text, settext] = useState<string>("");
 
-  const handleMark = (id: number) => {
-    setTodos((prev) =>
-      prev.map((todo) => {
-        return todo.id == id ? { ...todo, isDone: !todo.isDone } : todo;
-      })
-    );
+  const handleAdd = () => {
+    if (text.trim() === "") {
+      return;
+    }
+
+    const newTask: TodoType = {
+      id: todo.length + 1,
+      name: text,
+      isDone: false,
+    };
+
+    setTodo([...todo, newTask]);
+    settext("");
   };
 
-  const handleAddone = () => {
-    setText(prev => [...prev , {id:Date.now() , name:text , isDone:false}])
+  const handleDelete = (id:number) => {
+      setTodo(todo.filter(item => item.id !== id))
   }
 
+  const handleComplete = (id:number) => { 
+   setTodo(todo.map((item) => item.id === id ?  {...item , isDone : !item.isDone} : item))
+  }
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 100,
-      }}
-    >
-      <TextInput placeholder="Enter the tacks" value={todo.name} onChangeText={(value) => setTodos({ ...todo, name: value })}/>
+    <View>
+      <View
+        style={{
+          marginTop: 50,
+          flexDirection: "column",
+          gap: 30,
+          alignItems: "center",
+        }}
+      >
+        <TextInput
+          value={text}
+          onChangeText={settext}
+          style={{ borderWidth: 1, padding: 10, width: 300 }}
+        />
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: "white",
+            width: 80,
+            padding: 10,
+            borderRadius: 10,
+          }}
+          onPress={handleAdd}
+        >
+          <Text>Add Task</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={todo}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <View
             style={{
-              padding: 13,
+              backgroundColor: "white",
+              marginLeft: 40,
+              marginTop: 20,
+              width: 300,
+              padding: 20,
+
+              borderRadius: 10,
               flexDirection: "row",
               justifyContent: "space-between",
-              alignItems: "center",
-              backgroundColor: "white",
-              margin: 10,
-              width: 300,
             }}
-          >
-            <Text style={{ textDecorationLine : item.isDone ? "line-through" : ""}}>{item.name}</Text>
-            <TouchableOpacity onPress={() => handleMark(item.id)} style={{}}>
-              <Text>Mark</Text>
+          > <CheckBox value={item.isDone} onValueChange={() => handleComplete(item.id)}></CheckBox>
+            <Text style={{textDecorationLine : item.isDone ? "line-through" :  "none"}}>{item.name}</Text>
+            <TouchableOpacity onPress={() => handleDelete(item.id)}>
+              <Ionicons name="trash" size={30} />
             </TouchableOpacity>
           </View>
         )}
       />
     </View>
   );
-}
+};
 
 export default index;
